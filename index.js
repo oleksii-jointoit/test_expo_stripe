@@ -11,13 +11,15 @@ app.use(cors())
 
 app.post('/pay', async (req, res) => {
   try {
-    const { name } = req.body;
-    if (!name) return res.status('400').json({ message: 'Please enter name' })
+    const { invoiceId } = req.body;
+    if (!invoiceId) {
+      return res.status('400').json({ message: 'No invoiceId' })
+    }
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(25 * 100),
       currency: 'GBP',
       payment_method_types: ["card"],
-      metadata: { name }
+      metadata: { invoiceId }
     });
     const clientSecret = paymentIntent.client_secret;
     res.json({ message: 'Payment initiated', clientSecret });
